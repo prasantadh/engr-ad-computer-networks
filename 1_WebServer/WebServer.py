@@ -4,7 +4,7 @@ from socket import *
 
 serverSocket = socket(AF_INET, SOCK_STREAM)
 #Prepare a sever socket
-serverPort = 12000
+serverPort = 15000
 serverSocket.bind(('',serverPort))
 serverSocket.listen(1);
 print('Ready to serve...')
