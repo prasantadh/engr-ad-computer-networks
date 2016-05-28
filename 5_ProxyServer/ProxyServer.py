@@ -2,27 +2,29 @@ from socket import *
 import sys
 
 if len(sys.argv) <= 1:
-print 'Usage : "python ProxyServer.py server_ip"\n[server_ip : It is the IP Address Of Proxy Server'
+	print('Usage : "python ProxyServer.py server_ip"\n[server_ip : It is the IP Address Of Proxy Server')
 	sys.exit(2)
 	
 # Create a server socket, bind it to a port and start listening
 tcpSerSock = socket(AF_INET, SOCK_STREAM)
-# Fill in start.
-# Fill in end.
+serverPort = 13301
+tcpSerSocket.bind(('',serverPort))
+tcpSerSock.listen(1)
+
 while 1:
 	# Start receiving data from the client
-	print 'Ready to serve...'
+	print('Ready to serve...')
 	tcpCliSock, addr = tcpSerSock.accept()
-	print 'Received a connection from:', addr
-	message = # Fill in start.		# Fill in end.
-	print message
+	print('Received a connection from:', addr)
+	message = tcpCliSock.recv(2048)
+	print(message)
 	# Extract the filename from the given message
-	print message.split()[1]
+	print(message.split()[1])
 	filename = message.split()[1].partition("/")[2]
-	print filename
+	print(filename)
 	fileExist = "false"
 	filetouse = "/" + filename
-	print filetouse
+	print(filetouse)
 	try:
 		# Check whether the file exist in the cache
 		f = open(filetouse[1:], "r")                      
@@ -33,14 +35,14 @@ while 1:
 		tcpCliSock.send("Content-Type:text/html\r\n")
 		# Fill in start.
 		# Fill in end.
-		print 'Read from cache'     
+		print('Read from cache')     
 	# Error handling for file not found in cache
 	except IOError:
 		if fileExist == "false": 
 			# Create a socket on the proxyserver
-			c = # Fill in start.		# Fill in end.
+			c = socket(AF_INET, SOCK_STREAM)
 			hostn = filename.replace("www.","",1)         
-			print hostn                                   
+			print(hostn)                                   
 			try:
 				# Connect to the socket to port 80
 				# Fill in start.		
@@ -57,11 +59,11 @@ while 1:
 				# Fill in start.		
 				# Fill in end.			
 			except:
-				print "Illegal request"                                               
+				print("Illegal request")                                               
 		else:
 			# HTTP response message for file not found
-			# Fill in start.		
-			# Fill in end.
+			header = bytes("HTTP/1.1 404 Not Found\r\n\r\n", 'UTF-8')
+			tcpCliSock.send(header)
 	# Close the client and the server sockets    
 	tcpCliSock.close() 
 # Fill in start.		
