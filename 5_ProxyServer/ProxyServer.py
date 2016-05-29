@@ -1,5 +1,11 @@
+# Simple multithreaded proxy server with given specification
+# optional feature "404 Not Found Handled with a file"
+# oprional feature POST request handled by forwarding the message as received from the client
+
+
 from socket import *
 from random import randint
+import threading
 import sys
 
 if len(sys.argv) <= 1:
@@ -16,6 +22,8 @@ while 1:
 	# Start receiving data from the client
 	print('Ready to serve...')
 	tcpCliSock, addr = tcpSerSock.accept()
+	ct = threading.Thread()
+	ct.start()
 	print('Received a connection from:', addr)
 	message = tcpCliSock.recv(2048)
 	print(message)
@@ -28,14 +36,13 @@ while 1:
 	print("file_to_use ",filetouse)
 	try:
 		# Check whether the file exist in the cache
-		f = open(filetouse[1:], "r")                      
-		outputdata = f.readlines()                        
+		f = open(filetouse[1:], "rb")                      
 		fileExist = "true"
 		# ProxyServer finds a cache hit and generates a response message
 		tcpCliSock.send(bytes("HTTP/1.0 200 OK\r\n", 'UTF-8'))            
 		tcpCliSock.send(bytes("Content-Type:text/html\r\n\r\n",'UTF-8'))
 		response = f.read()
-		tcpCliSock.send(bytes(response,'UTF-8'))
+		tcpCliSock.send(response)
 		print('Sent from cache')     
 	# Error handling for file not found in cache
 	except IOError:
@@ -50,13 +57,14 @@ while 1:
 				print("connected to: ", hostn)
 				c.send(message)
 				response = c.recv(2048)
-
 				# Create a new file in the cache for the requested file. 
 				# Also send the response to the client socket and the corresponding file in the cache
 				tcpCliSock.send(response)
 				tmpFile = open("./" + filename,"wb")
+				# tmpFile.write(response.decode('UTF-8'))
 				tmpFile.write(response)
-				tmpFile.close()  			
+				tmpFile.close()  
+				print("Fetched and served")			
 			except:
 				print("Illegal request")                                               
 		else:
